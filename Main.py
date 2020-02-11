@@ -31,7 +31,6 @@ values = {
     "Rei": 10,
     "Ás": 11,
 }
-playing: True
 
 
 class Card:
@@ -119,39 +118,115 @@ def hit_or_stand(deck, hand):
     global playing
 
     while True:
-        x = input("Você quer comprar mais ou parar? Coloque C ou P")
+        x = input("\nVocê quer comprar mais ou parar? Coloque C ou P: \n")
 
-        if x[0].lower() == "C":
+        if x[0].lower() == "c":
             hit(deck, hand)
-        elif x[0].lower() == "P":
+        elif x[0].lower() == "p":
             print("O jogador para, turno da Casa")
             playing = False
-
         else:
             print("Você não colocou uma letra válida!")
             continue
         break
 
 
+def show_some(player, dealer):
+    print("\nMão da casa:")
+    print(" <Carta Escondida>")
+    print("", dealer.cards[1])
+    print("\nMão do jogador:", *player.cards, sep="\n ")
+
+
+def show_all(player, dealer):
+    print("\nMão da casa:", *dealer.cards, sep="\n ")
+    print("Mão da casa =", dealer.value)
+    print("\nMão do jogador", *player.cards, sep="\n ")
+    print("Mão do jogador =", player.value)
+
+
 def player_busts(player, dealer, chips):
-    print("O jogador explodiu a mão!")
+    print("\nO jogador explodiu a mão!")
     chips.lose_bet()
 
 
 def player_wins(player, dealer, chips):
-    print("O jogador ganhou!")
+    print("\nO jogador ganhou!")
     chips.win_bet()
 
 
 def dealer_busts(player, dealer, chips):
-    print("O jogador ganhou! A casa explodiu a mão")
+    print("\nO jogador ganhou! A casa explodiu a mão")
     chips.win_bet()
 
 
 def dealer_wins(player, dealer, chips):
-    print("A casa ganhou!")
+    print("\nA casa ganhou!")
     chips.lose_bet()
 
 
 def push(player, dealer):
     print("O jogador e a Casa empataram!")
+
+
+def start_game(chips):
+    print("Bem-vindo ao 21!")
+
+    deck = Deck()
+    deck.shuffle()
+
+    player_hand = Hand()
+    player_hand.add_card(deck.deal())
+    player_hand.add_card(deck.deal())
+
+    dealer_hand = Hand()
+    dealer_hand.add_card(deck.deal())
+    dealer_hand.add_card(deck.deal())
+
+    player_chips = Chips(chips)
+
+    take_bet(player_chips)
+
+    show_some(player_hand, dealer_hand)
+    playing = True
+    while playing == True:
+        hit_or_stand(deck, player_hand)
+        show_some(player_hand, dealer_hand)
+
+        if player_hand.value > 21:
+            player_busts(player_hand, dealer_hand, player_chips)
+            playing = False
+
+        if player_hand.value <= 21:
+            hit_or_stand(deck, player_hand)
+            while dealer_hand.value < 17:
+                hit(deck, dealer_hand)
+
+            show_all(player_hand, dealer_hand)
+
+            if dealer_hand.value > 21:
+                dealer_busts(player_hand, dealer_hand, player_chips)
+            elif dealer_hand.value > player_hand.value or player_hand.value > 21:
+                dealer_wins(player_hand, dealer_hand, player_chips)
+            elif dealer_hand.value < player_hand.value:
+                player_wins(player_hand, dealer_hand, player_chips)
+            else:
+                push(player_hand, dealer_hand)
+
+        print("\n Quantidade de fichas atuais: {}\n".format(player_chips.total))
+
+        if player_chips.total == 0:
+            print("Você não tem mais fichas para jogar! Você quebrou!")
+            break
+
+        else:
+            new_game = input("\nGostaria de jogar outra mão? s/n\n")
+
+            if new_game[0].lower() == "s":
+                start_game(player_chips.total)
+            else:
+                print("Obrigado por jogar!")
+                break
+
+
+start_game(100)
