@@ -92,3 +92,66 @@ class Chips:
 
     def lose_bet(self):
         self.total -= self.bet
+
+
+def take_bet(chips):
+    while True:
+        try:
+            chips.bet = int(input("Quantas fichas você deseja apostar? "))
+        except:
+            print("Por favor, coloque um número válido")
+        else:
+            if chips.bet > chips.total:
+                print(
+                    "Você não tem fichas o suficiente! Você tem: {}".format(chips.total)
+                )
+            else:
+                break
+
+
+def hit(deck, hand):
+    single_card = deck.deal()
+    hand.add_card(single_card)
+    hand.adjust_for_ace()
+
+
+def hit_or_stand(deck, hand):
+    global playing
+
+    while True:
+        x = input("Você quer comprar mais ou parar? Coloque C ou P")
+
+        if x[0].lower() == "C":
+            hit(deck, hand)
+        elif x[0].lower() == "P":
+            print("O jogador para, turno da Casa")
+            playing = False
+
+        else:
+            print("Você não colocou uma letra válida!")
+            continue
+        break
+
+
+def player_busts(player, dealer, chips):
+    print("O jogador explodiu a mão!")
+    chips.lose_bet()
+
+
+def player_wins(player, dealer, chips):
+    print("O jogador ganhou!")
+    chips.win_bet()
+
+
+def dealer_busts(player, dealer, chips):
+    print("O jogador ganhou! A casa explodiu a mão")
+    chips.win_bet()
+
+
+def dealer_wins(player, dealer, chips):
+    print("A casa ganhou!")
+    chips.lose_bet()
+
+
+def push(player, dealer):
+    print("O jogador e a Casa empataram!")
