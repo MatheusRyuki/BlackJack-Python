@@ -1,19 +1,46 @@
 import random
 
-suits = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
-ranks = ('Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King', 'Ace')
-values = {'Two':2, 'Three':3, 'Four':4, 'Five':5, 'Six':6, 'Seven':7, 'Eight':8, 'Nine':9, 'Ten':10, 'Jack':10,
-         'Queen':10, 'King':10, 'Ace':11}
+suits = ("Corações", "Diamantes", "Espadas", "Paus")
+ranks = (
+    "Dois",
+    "Três",
+    "Quatro",
+    "Cinco",
+    "Seis",
+    "Sete",
+    "Oito",
+    "Nove",
+    "Dez",
+    "Valete",
+    "Rainha",
+    "Rei",
+    "Ás",
+)
+values = {
+    "Dois": 2,
+    "Três": 3,
+    "Quatro": 4,
+    "Cinco": 5,
+    "Seis": 6,
+    "Sete": 7,
+    "Oito": 8,
+    "Nove": 9,
+    "Dez": 10,
+    "Valete": 10,
+    "Rainha": 10,
+    "Rei": 10,
+    "Ás": 11,
+}
 playing: True
 
+
 class Card:
-    def __init__(self,suit,rank):
+    def __init__(self, suit, rank):
         self.suit = suit
         self.rank = rank
-    
-    def __str__(self):
-        return self.rank + " of " + self.suit
 
+    def __str__(self):
+        return self.rank + " de " + self.suit
 
 
 class Deck:
@@ -21,32 +48,47 @@ class Deck:
         self.deck = []
         for suit in suits:
             for rank in ranks:
-                self.deck.append(Card(suit,rank))
+                self.deck.append(Card(suit, rank))
 
     def __str__(self):
-        deckComp = ''
+        deck_comp = ""
         for card in self.deck:
-            deckComp += '\n' + card.__str__()
-        return "The deck has " + deckComp
+            deck_comp += "\n" + card.__str__()
+        return "O deck tem " + deck_comp
 
     def shuffle(self):
         random.shuffle(self.deck)
-        
+
     def deal(self):
-        singleCard = self.deck.pop()
-        return singleCard
+        single_card = self.deck.pop()
+        return single_card
+
 
 class Hand:
     def __init__(self):
-        self.cards = []  
-        self.value = 0   
-        self.aces = 0 
+        self.cards = []
+        self.value = 0
+        self.aces = 0
 
-    def add_card(self,card):
+    def add_card(self, card):
         self.cards.append(card)
         self.value += values[card.rank]
-        if card.rank == "Ace":
+        if card.rank == "Ás":
             self.aces += 1
-    
+
     def adjust_for_ace(self):
-        pass
+        while self.value > 21 and self.aces:
+            self.value -= 10
+            self.aces -= 1
+
+
+class Chips:
+    def __init__(self, total=100):
+        self.total = total
+        self.bet = 0
+
+    def win_bet(self):
+        self.total += self.bet
+
+    def lose_bet(self):
+        self.total -= self.bet
