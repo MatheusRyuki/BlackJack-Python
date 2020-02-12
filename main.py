@@ -1,21 +1,7 @@
 import random
 
 suits = ("Corações", "Diamantes", "Espadas", "Paus")
-ranks = (
-    "Dois",
-    "Três",
-    "Quatro",
-    "Cinco",
-    "Seis",
-    "Sete",
-    "Oito",
-    "Nove",
-    "Dez",
-    "Valete",
-    "Rainha",
-    "Rei",
-    "Ás",
-)
+
 values = {
     "Dois": 2,
     "Três": 3,
@@ -46,7 +32,7 @@ class Deck:
     def __init__(self):
         self.deck = []
         for suit in suits:
-            for rank in ranks:
+            for rank in values.keys():
                 self.deck.append(Card(suit, rank))
 
     def __str__(self):
@@ -188,45 +174,45 @@ def start_game(chips):
     take_bet(player_chips)
 
     show_some(player_hand, dealer_hand)
-    playing = True
-    while playing == True:
-        hit_or_stand(deck, player_hand)
-        show_some(player_hand, dealer_hand)
+    turn(deck, player_hand, dealer_hand, player_chips)
 
-        if player_hand.value > 21:
-            player_busts(player_hand, dealer_hand, player_chips)
-            playing = False
+def turn(deck, player_hand, dealer_hand, player_chips):
+  hit_or_stand(deck, player_hand)
+  show_some(player_hand, dealer_hand)
 
-        if player_hand.value <= 21:
-            hit_or_stand(deck, player_hand)
-            while dealer_hand.value < 17:
-                hit(deck, dealer_hand)
+  if player_hand.value > 21:
+      show_all(player_hand, dealer_hand)
+      
+      player_busts(player_hand, dealer_hand, player_chips)
 
-            show_all(player_hand, dealer_hand)
+  if player_hand.value <= 21:
+      hit_or_stand(deck, player_hand)
+      while dealer_hand.value < 17:
+          hit(deck, dealer_hand)
 
-            if dealer_hand.value > 21:
-                dealer_busts(player_hand, dealer_hand, player_chips)
-            elif dealer_hand.value > player_hand.value or player_hand.value > 21:
-                dealer_wins(player_hand, dealer_hand, player_chips)
-            elif dealer_hand.value < player_hand.value:
-                player_wins(player_hand, dealer_hand, player_chips)
-            else:
-                push(player_hand, dealer_hand)
+      show_all(player_hand, dealer_hand)
 
-        print("\n Quantidade de fichas atuais: {}\n".format(player_chips.total))
+      if dealer_hand.value > 21:
+          dealer_busts(player_hand, dealer_hand, player_chips)
+      elif dealer_hand.value > player_hand.value or player_hand.value > 21:
+          dealer_wins(player_hand, dealer_hand, player_chips)
+      elif dealer_hand.value < player_hand.value:
+          player_wins(player_hand, dealer_hand, player_chips)
+      else:
+          push(player_hand, dealer_hand)
 
-        if player_chips.total == 0:
-            print("Você não tem mais fichas para jogar! Você quebrou!")
-            break
+  print("\n Quantidade de fichas atuais: {}\n".format(player_chips.total))
 
-        else:
-            new_game = input("\nGostaria de jogar outra mão? s/n\n")
+  if player_chips.total == 0:
+      print("Você não tem mais fichas para jogar! Você quebrou!")
 
-            if new_game[0].lower() == "s":
-                start_game(player_chips.total)
-            else:
-                print("Obrigado por jogar!")
-                break
+  else:
+      new_game = input("\nGostaria de jogar outra mão? s/n\n")
+
+      if new_game[0].lower() == "s":
+          start_game(player_chips.total)
+      else:
+          print("Obrigado por jogar!")
 
 
 start_game(100)
